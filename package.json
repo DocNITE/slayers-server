@@ -1,0 +1,22 @@
+{
+  "name": "slayers-server",
+  "version": "0.0.1",
+  "author": "Maxim Kozhevnikov (aka DocNight)",
+  "description": "Game server with main game logic, physics, resources and gamemode.",
+  "main": "index.js",
+  "scripts": {
+    "tsc": "npx tsc",
+    "test": "npm run tsc; node build/index.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@types/express": "^4.17.21",
+    "@types/socket.io": "^3.0.2",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5",
+    "spritesheet-js": "^1.2.8",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}
