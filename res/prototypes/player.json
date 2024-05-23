@@ -1,0 +1,29 @@
+{
+    "name": "Player",
+
+    "socketId": null,
+
+    "physics": {
+        "walkSpeed": 1,
+        "collidable": true,
+        "anchored": false,
+
+        "shape": {
+            "colored": true,
+            "color": [255, 255, 255],
+
+            "width": 16,
+            "height": 16
+        },
+
+        "velocity": {
+            "x": 0,
+            "y": 0
+        },
+
+        "position": {
+            "x": 0,
+            "y": 0
+        }
+    }
+}
