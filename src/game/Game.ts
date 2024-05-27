@@ -4,81 +4,47 @@ import { Express } from 'express';
 import { PORT } from '../globals';
 import { EventEmitter } from 'events';
 import Logger from '../utils/Logger';
-import * as Physics from './systems/Physics'
+import World from './World';
 import Entity from './Entity';
+import NetSession from '../utils/NetSession';
+// Systems
+import * as PhysicsSystem from './systems/Physics'
+import * as PlayerSystem from './systems/Player'
+import * as WorldSystem from './systems/World'
 
 class Game {
-    // Server name
-    public serverName: string;
-
-    // Maximum players in the game
-    public maxPlayers: number;
-    // Maximum possible connections (for admins/devs)
-    public maxConnections: number;
-
+    // Configuration file
+    public config: any;
+    
     // Simulation inteval (like do physics every 1/60 ms)
     public updateTime: number;
 
     private updateIntervalId?: any;
 
-    private httpServer?: http.Server;
-    private socketServer?: Server;
+    private httpServer?: http.Server | null;
+    private socketServer?: Server | null;
     private logger: Logger;
 
     public emitter: EventEmitter;
 
     // All connected sockets/players
-    public sockets: Socket[];
-    // All game entities like players, walls, objects
-    public entities: Entity[];
+    public sessions: NetSession[];
+
+    // Contains all world/map tiles and entities
+    public world: World;
 
     constructor() {
-        // TODO: We should try read config file. 
-        // If not - than give default values
-        this.serverName = 'Slayers Game Server';
-        this.maxPlayers = 16;
-        this.maxConnections = 32;
-
         this.updateTime = 0.20; // 20 ms
+
+        this.httpServer = null;
+        this.socketServer = null;
+        this.logger = new Logger('Game');
 
         this.emitter = new EventEmitter();
 
-        this.sockets = [];
-        this.entities = [];
-
-        this.logger = new Logger('Game');
-    }
-
-    /**
-     * Create entity
-     * @param filePath json file with properties(components) for entity
-     * @returns entity
-     */
-    public createEntity(filePath?: string): Entity {
-        let entity = new Entity();
-        this.entities.push(entity);
-
-        // Set actual entity id, equal like array index
-        entity.id = this.entities.indexOf(entity);
-        // Try to load json object from the file
-        if (filePath != null) 
-            entity.fromFile(filePath);
-
-        this.logger.info('Created entity ' + entity.id);
-        this.emitter.emit('onEntityCreated', this, entity);
-
-        return entity;
-    }
-
-    /**
-     * Destory entity
-     * @param entity entity what should be deleted
-     */
-    public destroyEntity(entity: Entity) {
-        this.entities.splice(this.entities.indexOf(entity), 1);
-
-        this.logger.info(`Destroyed entity ${entity.id}`);
-        this.emitter.emit('onEntityDestroyed', this, entity);
+        this.sessions = [];
+ 
+        this.world = new World(this);
     }
 
     /**
@@ -95,6 +61,14 @@ class Game {
     }
 
     /**
+     * Initialize game configuration
+     * @param config json config
+     */
+    public initConfig(config: any) {
+        this.config = config;
+    }
+
+    /**
      * Initialize game networking
      */
     public initNetwork() {
@@ -103,39 +77,36 @@ class Game {
 
         // Host game server
         this.httpServer.listen(PORT, () => {
-            this.logger.info('Server listening on port 11000');
+            this.logger.info(`Server listening on port ${this.config.network.port}`);
         });
 
         // Listen if anyone connected
         this.socketServer.on('connection', (socket: Socket) => {
-            this.logger.info(socket.id + ' connected');
-
-            // Emit event, because new player joined
-            this.emitter.emit('onPlayerConnect', this, socket);
-
-            // ofc we should remove socket if he was disconnect 😀
-            socket.on('disconnect', () => {
-                this.sockets.splice(this.sockets.indexOf(socket), 1);
-                this.logger.info(socket.id + ' disconnected');
-
-                // TODO: Destroy player entities with some system
-                this.destroyEntity(playerEnt);
-            });
-
-            // TODO: Should be moved into system
-            let playerEnt = this.createEntity('res/prototypes/player.json');
-            if ('socketId' in playerEnt.properties) {
-                playerEnt.properties.socketId = socket.id;
-                this.logger.info(`Player's entity ${playerEnt.id} marked on socket.id ${socket.id}`);
+            // If we have max connections
+            if (this.sessions.length >= this.config.network.maxConnections) {
+                socket.disconnect(true);
+                return;
             }
 
-            this.logger.info(`Player ${socket.id} initialized on entity ${playerEnt.id}`);
-            
-            // Emit when player was created
-            this.emitter.emit('onPlayerCreated', this, socket);
+            this.logger.info(socket.id + ' connected');
+
+            // Create new player session
+            let session = new NetSession(socket);
+
+            // ofc we should remove socket if he was disconnect 😀
+            session.socket.on('disconnect', () => {
+                this.sessions.splice(this.sessions.indexOf(session), 1);
+                this.logger.info(session.socket.id + ' disconnected');
+
+                // Emit event, because player disconnected 
+                this.emitter.emit('onPlayerDisconnect', this, session)
+            });
+
+            // Emit event, because new player joined
+            this.emitter.emit('onPlayerConnect', this, session);            
 
             // Add socket and manage it
-            this.sockets.push(socket);
+            this.sessions.push(session);
         })
     }
 
@@ -143,7 +114,9 @@ class Game {
      * Initialize systems and other staff
      */
     public initSystems() {
-        Physics.create(this);
+        PhysicsSystem.create(this);
+        PlayerSystem.create(this);
+        WorldSystem.create(this);
     }
 
     /**

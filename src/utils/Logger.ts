@@ -21,11 +21,19 @@ class Logger {
     private print(type: string, message?: any, ...optionalParams: any[]) {
         console.log(`[${type}] ${this.name}: ` + message, ...optionalParams);
     }
+
     /**
      * Print info into console
      */
     public info(message?: any, ...optionalParams: any[]) {
         this.print('INFO', message, ...optionalParams);
+    }
+
+    /**
+     * Print warning into console 
+     */
+    public warn(message?: any, ...optionalParams: any[]) {
+        this.print('WARNING', message, ...optionalParams)
     }
 }
 

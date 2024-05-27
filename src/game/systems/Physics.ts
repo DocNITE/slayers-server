@@ -20,19 +20,22 @@ function onInit(game: Game) {
  * @param game game context
  */
 function onUpdate(game: Game) {
-}
+    game.world.entities.forEach(entity => {
+        if (!('physics' in entity.properties))
+            return;
+        
+        let physicsComp = entity.properties.physics;
 
-// TEST START
-function onPlayerConnect(game: Game, socket: Socket) {
-    logger.info("Player connected with " + socket.id)
+        // Update position
+        physicsComp.position = {
+            x: physicsComp.position.x + (physicsComp.velocity.x * physicsComp.walkSpeed), 
+            y: physicsComp.position.y + (physicsComp.velocity.y * physicsComp.walkSpeed)
+        }
+    });
 }
-// TEST END
 
 // Export function for creating system and place events
 export function create(game: Game) {
     game.emitter.on('onInit', onInit);
     game.emitter.on('onUpdate', onUpdate);
-    // TEST START
-    game.emitter.on('onPlayerConnect', onPlayerConnect)
-    // TEST END
 }

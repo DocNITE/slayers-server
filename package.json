@@ -5,8 +5,11 @@
   "description": "Game server with main game logic, physics, resources and gamemode.",
   "main": "index.js",
   "scripts": {
+    "spritesheet": "npx spritesheet-js res/textures/*.png -p public",
     "tsc": "npx tsc",
-    "test": "npm run tsc; node build/index.js"
+    "gen": "npm run tsc; npm run spritesheet",
+    "test": "npm run gen; node build/index.js",
+    "start": "npm run gen; node build/index.js"
   },
   "license": "ISC",
   "dependencies": {

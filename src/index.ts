@@ -6,11 +6,15 @@ import Game from './game/Game';
 import Logger from './utils/Logger';
 import { PORT, RES_PORT } from './globals';
 
+// Express logger
 const logger = new Logger("Express");
+// JSON server configuration file
+const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 
+// Create express application
 const app = express();
 app.use(cors());
-app.use(express.static('res'));
+app.use(express.static('public'));
 
 // FIXME: I think it should be works better than
 // my solution of CORS connection...
@@ -22,7 +26,7 @@ app.use((req, res, next) => {
 
 // Give response for giving some res file
 app.get('/*', (req, res) => {
-  const filePath = join('res', req.url);
+  const filePath = join('public', req.url);
   if (fs.existsSync(filePath)) {
     res.sendFile(filePath);
   } else {
@@ -31,12 +35,13 @@ app.get('/*', (req, res) => {
 });
 
 // Host server resources
-app.listen(RES_PORT + 1, () => {
-  logger.info(`Resources server started on port ${RES_PORT}`);
+app.listen(config.network.port + 1, () => {
+  logger.info(`Resources server started on port ${config.network.port + 1}`);
 });
 
 // Create game context
-let game = new Game();
+const game = new Game();
+game.initConfig(config);
 game.createNetwork(app);
 game.initNetwork();
 game.initSystems();

@@ -25,5 +25,9 @@
             "x": 0,
             "y": 0
         }
+    },
+
+    "sprite": {
+        "source": "hum-idle1.png"
     }
 }

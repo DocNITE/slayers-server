@@ -1,2 +1,15 @@
 {
+    "network": {
+        "hostname": "Slayers Game Server",
+
+        "maxConnection": 128,
+
+        "port": 11000,
+        "address": "localhost"
+    },
+
+    "world": {
+        "file": null,
+        "generation": true
+    }
 }

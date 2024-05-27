@@ -4,15 +4,29 @@ import { parseIsolatedEntityName } from 'typescript';
 const NET_PING_TIME = 3000;
 const NET_PING_MAX_ATTEMPTS = 2;
 
-class NetSocket {
+class NetSession {
+    // Player username
+    public name: string;
+
+    // Entity id what controlled by player
+    public attachedEntity?: number | null;
+
+    // Player socket
     public socket: Socket;
+    // Ping attempts before disconnection
     public pingAttempt: number;
 
     private pingIntervalId?: any;
 
     constructor(socket: Socket) {
+        this.name = "Unknown";
+
+        this.attachedEntity = null;
+
         this.socket = socket;
         this.pingAttempt = 0;
+
+        this.pingIntervalId = null;
     }
 
     /**
@@ -41,4 +55,4 @@ class NetSocket {
     }
 }
 
-export default NetSocket;
+export default NetSession;
