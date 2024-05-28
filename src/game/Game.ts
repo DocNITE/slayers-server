@@ -19,10 +19,12 @@ class Game {
     // Simulation inteval (like do physics every 1/60 ms)
     public updateTime: number;
 
+    // Socket.io server
+    public socketServer?: Server | null;
+
     private updateIntervalId?: any;
 
     private httpServer?: http.Server | null;
-    private socketServer?: Server | null;
     private logger: Logger;
 
     public emitter: EventEmitter;

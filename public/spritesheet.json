@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"image": "spritesheet.png",
-		"size": {"w":80,"h":64},
+		"size": {"w":80,"h":80},
 		"scale": "1"
 	},
 	"frames": {
@@ -53,7 +53,7 @@
 			"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 			"sourceSize": {"w":16,"h":16}
 		},
-		"tile-cobblestone.png":
+		"money1.png":
 		{
 			"frame": {"x":0,"y":32,"w":16,"h":16},
 			"rotated": false,
@@ -61,7 +61,7 @@
 			"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 			"sourceSize": {"w":16,"h":16}
 		},
-		"tile-grass2.png":
+		"money2.png":
 		{
 			"frame": {"x":16,"y":32,"w":16,"h":16},
 			"rotated": false,
@@ -69,7 +69,7 @@
 			"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 			"sourceSize": {"w":16,"h":16}
 		},
-		"tile-grass.png":
+		"money3.png":
 		{
 			"frame": {"x":32,"y":32,"w":16,"h":16},
 			"rotated": false,
@@ -77,7 +77,7 @@
 			"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 			"sourceSize": {"w":16,"h":16}
 		},
-		"tile-slate.png":
+		"money4.png":
 		{
 			"frame": {"x":48,"y":0,"w":16,"h":16},
 			"rotated": false,
@@ -85,7 +85,7 @@
 			"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 			"sourceSize": {"w":16,"h":16}
 		},
-		"tile-wall-left-down.png":
+		"money5.png":
 		{
 			"frame": {"x":48,"y":16,"w":16,"h":16},
 			"rotated": false,
@@ -93,7 +93,7 @@
 			"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 			"sourceSize": {"w":16,"h":16}
 		},
-		"tile-wall-left-mid.png":
+		"money6.png":
 		{
 			"frame": {"x":48,"y":32,"w":16,"h":16},
 			"rotated": false,
@@ -101,7 +101,7 @@
 			"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 			"sourceSize": {"w":16,"h":16}
 		},
-		"tile-wall-left-up.png":
+		"tile-cobblestone.png":
 		{
 			"frame": {"x":0,"y":48,"w":16,"h":16},
 			"rotated": false,
@@ -109,7 +109,7 @@
 			"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 			"sourceSize": {"w":16,"h":16}
 		},
-		"tile-wall-mid-down.png":
+		"tile-grass2.png":
 		{
 			"frame": {"x":16,"y":48,"w":16,"h":16},
 			"rotated": false,
@@ -117,7 +117,7 @@
 			"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 			"sourceSize": {"w":16,"h":16}
 		},
-		"tile-wall-mid-up.png":
+		"tile-grass.png":
 		{
 			"frame": {"x":32,"y":48,"w":16,"h":16},
 			"rotated": false,
@@ -125,7 +125,7 @@
 			"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 			"sourceSize": {"w":16,"h":16}
 		},
-		"tile-wall-right-down.png":
+		"tile-slate.png":
 		{
 			"frame": {"x":48,"y":48,"w":16,"h":16},
 			"rotated": false,
@@ -133,7 +133,7 @@
 			"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 			"sourceSize": {"w":16,"h":16}
 		},
-		"tile-wall-right-mid.png":
+		"tile-wall-left-down.png":
 		{
 			"frame": {"x":64,"y":0,"w":16,"h":16},
 			"rotated": false,
@@ -141,9 +141,57 @@
 			"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 			"sourceSize": {"w":16,"h":16}
 		},
-		"tile-wall-right-up.png":
+		"tile-wall-left-mid.png":
 		{
 			"frame": {"x":64,"y":16,"w":16,"h":16},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
+			"sourceSize": {"w":16,"h":16}
+		},
+		"tile-wall-left-up.png":
+		{
+			"frame": {"x":64,"y":32,"w":16,"h":16},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
+			"sourceSize": {"w":16,"h":16}
+		},
+		"tile-wall-mid-down.png":
+		{
+			"frame": {"x":64,"y":48,"w":16,"h":16},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
+			"sourceSize": {"w":16,"h":16}
+		},
+		"tile-wall-mid-up.png":
+		{
+			"frame": {"x":0,"y":64,"w":16,"h":16},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
+			"sourceSize": {"w":16,"h":16}
+		},
+		"tile-wall-right-down.png":
+		{
+			"frame": {"x":16,"y":64,"w":16,"h":16},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
+			"sourceSize": {"w":16,"h":16}
+		},
+		"tile-wall-right-mid.png":
+		{
+			"frame": {"x":32,"y":64,"w":16,"h":16},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
+			"sourceSize": {"w":16,"h":16}
+		},
+		"tile-wall-right-up.png":
+		{
+			"frame": {"x":48,"y":64,"w":16,"h":16},
 			"rotated": false,
 			"trimmed": false,
 			"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},

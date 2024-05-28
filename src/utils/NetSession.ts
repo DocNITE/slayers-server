@@ -19,7 +19,8 @@ class NetSession {
     private pingIntervalId?: any;
 
     constructor(socket: Socket) {
-        this.name = "Unknown";
+        const randomValue = Math.floor(Math.random() * (9000 - 1000 + 1)) + 1000;
+        this.name = `Player${randomValue}`;
 
         this.attachedEntity = null;
 

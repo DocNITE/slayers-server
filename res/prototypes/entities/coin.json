@@ -1,0 +1,14 @@
+{
+    "money": true,
+
+    "physics": {
+        "position": {
+            "x": 0,
+            "y": 0
+        }
+    },
+
+    "sprite": {
+        "source": "money1.png"
+    }
+}
