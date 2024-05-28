@@ -38,7 +38,7 @@ class World {
             entity.fromFile(filePath);
 
         this.logger.info('Created entity ' + entity.id);
-        this.game.emitter.emit('onEntityCreated', this, entity);
+        this.game.emitter.emit('onEntityCreated', this.game, this, entity);
 
         return entity;
     }
@@ -51,7 +51,7 @@ class World {
         this.entities.splice(this.entities.indexOf(entity), 1);
 
         this.logger.info(`Destroyed entity ${entity.id}`);
-        this.game.emitter.emit('onEntityDestroyed', this, entity);
+        this.game.emitter.emit('onEntityDestroyed', this.game, this, entity);
     }
 
     /**
@@ -95,7 +95,7 @@ class World {
             tile.fromFile(filePath);
 
         this.logger.info('Created tile ' + tile.id);
-        this.game.emitter.emit('onTileCreated', this, tile);
+        this.game.emitter.emit('onTileCreated', this.game, this, tile);
 
         return tile;
     }
@@ -108,7 +108,7 @@ class World {
         this.tiles.splice(this.tiles.indexOf(tile), 1);
 
         this.logger.info(`Destroyed entity ${tile.id}`);
-        this.game.emitter.emit('onTileDestroyed', this, tile);
+        this.game.emitter.emit('onTileDestroyed', this.game, this, tile);
     }
 
     /**
