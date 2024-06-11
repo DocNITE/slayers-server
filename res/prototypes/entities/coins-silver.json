@@ -1,15 +1,10 @@
 {
-    "name": "Player",
-
-    "socketId": null,
-
-    "coins": {
-        "amount": 0
+    "coin": {
+        "amount": 2
     },
 
     "physics": {
         "walkSpeed": 1,
-        "collidable": true,
         "anchored": false,
 
         "shape": {
@@ -26,14 +21,14 @@
         },
 
         "position": {
-            "x": 2,
-            "y": 2
+            "x": 0,
+            "y": 0
         }
     },
 
     "sprite": {
-        "source": "player-blue-1.png",
-        "secondSource": "player-blue-2.png",
+        "source": "coins-silver-1.png",
+        "secondSource": "coins-silver-2.png",
         "fliped": false
     }
 }

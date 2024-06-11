@@ -30,6 +30,13 @@ class Logger {
     }
 
     /**
+     * Print error into console
+     */
+    public error(message?: any, ...optionalParams: any[]) {
+        this.print('ERROR', message, ...optionalParams);
+    }
+
+    /**
      * Print warning into console 
      */
     public warn(message?: any, ...optionalParams: any[]) {

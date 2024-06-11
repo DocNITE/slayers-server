@@ -2,14 +2,22 @@
     "network": {
         "hostname": "Slayers Game Server",
 
-        "maxConnection": 128,
+        "maxPlayers": 32,
+        "maxConnections": 128,
 
         "port": 11000,
         "address": "localhost"
     },
 
+    "hub": {
+        "port": 10000,
+        "address": "localhost"
+    },
+
     "world": {
         "file": null,
-        "generation": true
+        "generation": true,
+
+        "tileSize": 16
     }
 }

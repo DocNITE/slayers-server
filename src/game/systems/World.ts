@@ -5,6 +5,7 @@ import Game from "../Game";
 const logger = new Logger('World'); 
 
 const TILES_PATH = 'res/prototypes/tiles/';
+export const WOLRD_SIZE = 12;
 
 function createTile(game: Game, x: number, y: number, file: string) {
     let tile = game.world.createTile(TILES_PATH + file);
@@ -19,38 +20,38 @@ function createTile(game: Game, x: number, y: number, file: string) {
 function onInit(game: Game) {
     // TODO: Need implement save/load maps
     
-    const worldSize = 12;
+    const worldSize = WOLRD_SIZE;
 
-    createTile(game, 0, 0, 'cobblestone.json');
-    createTile(game, 0, worldSize-1, 'cobblestone.json');
-    createTile(game, worldSize-1, 0, 'cobblestone.json');
-    createTile(game, worldSize-1, worldSize-1, 'cobblestone.json');
+    createTile(game, 0, 0, 'cave-wall.json');
+    createTile(game, 0, worldSize-1, 'cave-wall.json');
+    createTile(game, worldSize-1, 0, 'cave-wall.json');
+    createTile(game, worldSize-1, worldSize-1, 'cave-wall.json');
 
     // Generate left mid walls
     for (let y = 1; y < (worldSize-1); y++) {
         // Create a wall tile
-        createTile(game, 0, y, 'cobblestone.json');
+        createTile(game, 0, y, 'cave-wall.json');
     } 
     // Generate right mid walls
     for (let y = 1; y < (worldSize-1); y++) {
         // Create a wall tile
-        createTile(game, worldSize-1, y, 'cobblestone.json');
+        createTile(game, worldSize-1, y, 'cave-wall.json');
     } 
     // Generate mid up walls
     for (let x = 1; x < (worldSize-1); x++) {
         // Create a wall tile
-        createTile(game, x, 0, 'cobblestone.json');
+        createTile(game, x, 0, 'cave-wall.json');
     }
     // Generate mid down walls
     for (let x = 1; x < (worldSize-1); x++) {
         // Create a wall tile
-        createTile(game, x, worldSize-1, 'cobblestone.json');
+        createTile(game, x, worldSize-1, 'cave-wall.json');
     }
     // Generate cobblestone
     for (let x = 1; x < (worldSize-1); x++) {
         for (let y = 1; y < (worldSize-1); y++) {
             // Create cobblestone tile
-            createTile(game, x, y, 'grass.json');
+            createTile(game, x, y, 'cave-floor.json');
         } 
     }
 

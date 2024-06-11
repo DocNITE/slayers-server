@@ -6,6 +6,25 @@ import Game from './game/Game';
 import Logger from './utils/Logger';
 import { PORT, RES_PORT } from './globals';
 
+/*
+pool.connect((err) => {
+  if (err) {
+    console.error('Error connecting to PostgreSQL:', err);
+    return;
+  }
+  console.log('Connected to PostgreSQL');
+
+  // Выполните SQL-запрос
+  pool.query('SELECT * FROM your_table', (err, result) => {
+    if (err) {
+      console.error('Error running query:', err);
+      return;
+    }
+    console.log('Result:', result);
+  });
+});
+*/
+
 // Express logger
 const logger = new Logger("Express");
 // JSON server configuration file
@@ -25,7 +44,7 @@ app.use((req, res, next) => {
 });
 
 // Give response for giving some res file
-app.get('/*', (req, res) => {
+app.get('/public', (req, res) => {
   const filePath = join('public', req.url);
   if (fs.existsSync(filePath)) {
     res.sendFile(filePath);
@@ -33,6 +52,33 @@ app.get('/*', (req, res) => {
     res.status(404).send('Not Found');
   }
 });
+
+// Try to login
+app.post('/login', (req, res) => {
+  logger.warn(req.body)
+  if (!req.body)
+    return;
+
+  const { username, password } = req.body;
+
+  if (username != 'DocNight') {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+})
+
+// Give response for return connection info
+app.get('/info', (req, res) => {
+  const data = { 
+    hostname: game.hostname, 
+
+    maxPlayers: game.maxPlayers,
+    online: game.sessions.length,
+    
+    port: config.network.port,
+    address: config.network.address,
+  }
+  res.json(data);
+})
 
 // Host server resources
 app.listen(config.network.port + 1, () => {

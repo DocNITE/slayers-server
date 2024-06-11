@@ -2,8 +2,8 @@ import { Socket } from "socket.io";
 import Logger from "../../utils/Logger";
 import Game from "../Game";
 import NetSession from "../../utils/NetSession";
-import World from "../World";
-import Entity from "../Entity";
+import World from "../components/World";
+import Entity from "../components/Entity";
 
 /**
  * Logger for player system 
@@ -65,31 +65,6 @@ function onPlayerCreated(game: Game, session: NetSession) {
     session.socket.emit('Player_attachEntity', session.attachedEntity);
 }
 
-function checkCollision(game: Game, x: number, y: number) {
-    for (let i = 0; i < game.world.tiles.length; i++) {
-        const tile = game.world.tiles[i];
-                    
-        if (tile.properties.x == x && tile.properties.y == y) {
-            if ('collidable' in tile.properties) {
-                return true;
-            }
-        }
-    }
-
-    for (let i = 0; i < game.world.entities.length; i++) {
-        const entity = game.world.entities[i];
-                    
-        if (entity.properties.physics.position.x == x && entity.properties.physics.position.y == y) {
-            if ('collidable' in entity.properties.physics) {
-                if (entity.properties.physics.collidable == true)
-                    return true;
-            }
-        }
-    }
-
-    return false;
-}
-
 /**
  * Emit when player was connect on the server
  * @param game game context
@@ -101,49 +76,17 @@ function onPlayerConnect(game: Game, session: NetSession) {
     createPlayer(game, session);
 
     session.socket.on('Player_move', (ev: string) => {
-        if (session.attachedEntity == null)
-            return;
-
-        let entity = game.world.findEntityById(session.attachedEntity);
-        if (entity == null)
-            return;
-
-        logger.info(`Entity ${entity.id} moved to ${ev}`);
-
-        let ex = entity.properties.physics.position.x;
-        let ey = entity.properties.physics.position.y;
-
-        switch (ev) {
-            case 'w':
-                if (checkCollision(game, ex, ey-1))
-                    return;
-                entity.properties.physics.position.y--;
-                break; 
-            case 'a':
-                if (checkCollision(game, ex-1, ey))
-                    return;
-                entity.properties.physics.position.x--;
-                break;
-            case 's':
-                if (checkCollision(game, ex, ey+1))
-                    return;
-                entity.properties.physics.position.y++;
-                break;
-            case 'd': 
-                if (checkCollision(game, ex+1, ey))
-                    return;
-                entity.properties.physics.position.x++;
-                break;
-            default:
-                break;
-        }
-
-        game.socketServer?.emit('Player_move', 
-                            entity.id, 
-                            entity.properties.physics.position.x,
-                            entity.properties.physics.position.y
-                        );
+        game.emitter.emit('onPlayerMove', game, session, ev)
     });
+
+    session.socket.on('Player_setName', (nickname: string) => {
+        if (session.attachedEntity == null)
+            return
+
+        let entity = game.world.findEntityById(session.attachedEntity)
+        if (entity != null)
+            setName(game, entity, nickname);
+    })
 }
 
 function onPlayerDisconnect(game: Game, session: NetSession) {

@@ -3,18 +3,27 @@ import { Server, Socket } from 'socket.io';
 import { Express } from 'express';
 import { PORT } from '../globals';
 import { EventEmitter } from 'events';
+import { Pool } from 'pg';
 import Logger from '../utils/Logger';
-import World from './World';
-import Entity from './Entity';
+import World from './components/World';
 import NetSession from '../utils/NetSession';
 // Systems
 import * as PhysicsSystem from './systems/Physics'
-import * as PlayerSystem from './systems/Player'
 import * as WorldSystem from './systems/World'
+import * as PlayerSystem from './systems/Player'
+import * as GamemodeSystem from './systems/Gamemode'
 
 class Game {
     // Configuration file
     public config: any;
+
+    // Server hostname what can be show in the hub
+    public hostname: string;
+
+    // Maximum possible players in the game
+    public maxPlayers: number;
+    // Maximum possible connection to the server
+    public maxConnections: number;
     
     // Simulation inteval (like do physics every 1/60 ms)
     public updateTime: number;
@@ -29,6 +38,9 @@ class Game {
 
     public emitter: EventEmitter;
 
+    // PostgreSQL database server
+    public db: Pool | null;
+
     // All connected sockets/players
     public sessions: NetSession[];
 
@@ -36,13 +48,20 @@ class Game {
     public world: World;
 
     constructor() {
-        this.updateTime = 0.20; // 20 ms
+        this.hostname = "Uknown Server"
+
+        this.maxPlayers = 16,
+        this.maxConnections = 128,
+
+        this.updateTime = 0.060; // 60 ms
 
         this.httpServer = null;
         this.socketServer = null;
         this.logger = new Logger('Game');
 
         this.emitter = new EventEmitter();
+
+        this.db = null;
 
         this.sessions = [];
  
@@ -68,6 +87,11 @@ class Game {
      */
     public initConfig(config: any) {
         this.config = config;
+
+        // Set another data 
+        this.hostname = this.config.network.hostname;
+        this.maxPlayers = this.config.network.maxPlayers;
+        this.maxConnections = this.config.network.maxConnections;
     }
 
     /**
@@ -77,9 +101,63 @@ class Game {
         if (this.httpServer == null || this.socketServer == null)
             return;
 
+        // Connect to postgresql database
+        // TODO/FIXME: Should be moved into config.json. I don't have time for this...
+        this.db = new Pool({
+            user: 'postgres',
+            host: 'docnight.ru',
+            database: 'webgame',
+            password: '0530324jj',
+            port: 5432,
+        });
+
+        // Handle connection info
+        this.db.connect((err) => {
+            if (err) {
+                this.logger.error('Error connecting to PostgreSQL:', err);
+                return;
+            }
+            this.logger.info('Connected to PostgreSQL');
+        });
+
         // Host game server
         this.httpServer.listen(PORT, () => {
             this.logger.info(`Server listening on port ${this.config.network.port}`);
+
+            // Send request to hub, if we want listing our server
+            try {
+                // Set address to hub connection
+                const options = {
+                    method: 'POST',
+                    hostname: this.config.hub.address,
+                    port: this.config.hub.port,
+                    path: '/ping',
+                    headers: {
+                    'Content-Type': 'application/json'
+                    }
+                };
+              
+                // Make http request
+                const req = http.request(options, (res) => {
+                    this.logger.info(`Response status: ${res.statusCode}`);
+                    this.logger.info(`Response headers: ${JSON.stringify(res.headers)}`);
+                });        
+
+                // Handle error
+                req.on('error', (error) => {
+                    this.logger.error(`Can't ping to hub: ${error}`);
+                })
+
+                // Write the connection table info
+                req.write(JSON.stringify({ 
+                    address: this.config.network.address,
+                    port: this.config.network.port
+                }));
+
+                req.end();
+            } catch (error) {
+                //this.logger.error(error);
+            }
         });
 
         // Listen if anyone connected
@@ -117,8 +195,9 @@ class Game {
      */
     public initSystems() {
         PhysicsSystem.create(this);
-        PlayerSystem.create(this);
         WorldSystem.create(this);
+        PlayerSystem.create(this);
+        GamemodeSystem.create(this);
     }
 
     /**
@@ -135,6 +214,10 @@ class Game {
         this.updateIntervalId = setInterval(() => {
             this.emitter.emit('onUpdate', this);
         }, this.updateTime);
+
+        setInterval(() => {
+            this.emitter.emit('onSecond', this);
+        }, 1000)
     }
 
     /**
