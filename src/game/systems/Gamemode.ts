@@ -56,7 +56,11 @@ const takeQuery = {
     text: 'SELECT s_name, s_score FROM Score;',
 };
 
-function saveGame(game: Game) {
+/**
+ * Save global score into PostgreSQL DataBase
+ * @param game game context
+ */
+function saveGlobalScore(game: Game) {
     game.sessions.forEach(session => {
         if (session.attachedEntity == null)
             return
@@ -76,9 +80,34 @@ function saveGame(game: Game) {
                 return;
             }
             logger.info('Global score successfuly saved:', res)
-        })
-        
+        })        
     });
+}
+
+/**
+ * Save round results record for childs
+ * @param game game context
+ */
+function saveRoundResult(game: Game, entId: number, coinAmount: number) {
+    const now = new Date();
+    const currentTime = now.getTime();
+
+    let entity = game.world.findEntityById(entId);
+    if (entity == null)
+        return 
+
+    const query = {
+        text: 'INSERT INTO RoundResults (r_name, r_time, r_amount) VALUES ($1, $2, $3)',
+        values: [entity.properties.name, `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`, coinAmount],
+    };
+
+    game.db?.query(query, (err, res) => {
+        if (err) {
+            logger.error(err);
+            return;
+        }
+        logger.info('Global score successfuly saved:', res)
+    }) 
 }
 
 /**
@@ -97,17 +126,17 @@ function onSecond(game: Game) {
             });
 
             // Save round data
-            saveGame(game);
+            saveGlobalScore(game);
 
-            let oldCoins = 0;
+            let allCoins = 0;
             let winnerId = -1;
             // Remove coins from players
             game.world.entities.forEach(entity => {
                 if (winnerId == -1)
                     winnerId = entity.id;
                 if ('coins' in entity.properties) {
-                    if (oldCoins < entity.properties.coins.amount) {
-                        oldCoins = entity.properties.coins.amount;
+                    if (allCoins < entity.properties.coins.amount) {
+                        allCoins = entity.properties.coins.amount;
                         winnerId = entity.id;
                     }
                     entity.properties.coins.amount = 0;
@@ -115,7 +144,9 @@ function onSecond(game: Game) {
                 }
             });
 
-            game.socketServer?.emit('Round_winner', winnerId, oldCoins)
+            // Save current round record
+            saveRoundResult(game, winnerId, allCoins);
+            game.socketServer?.emit('Round_winner', winnerId, allCoins);
 
             inGame = false;
             inChill = true;
@@ -153,6 +184,7 @@ function onSecond(game: Game) {
             timeLeft--;
             return;
         } else if (timeLeft < 1 && game.sessions.length > 0) { 
+            game.socketServer?.emit('Round_start');
             inGame = true;
             logger.info('Start game...');
             timeLeft = maxTime;
