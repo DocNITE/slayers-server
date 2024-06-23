@@ -104,10 +104,10 @@ class Game {
         // Connect to postgresql database
         // TODO/FIXME: Should be moved into config.json. I don't have time for this...
         this.db = new Pool({
-            user: 'postgres',
-            host: 'docnight.ru',
-            database: 'webgame',
-            password: '0530324jj',
+            user: 'USR',
+            host: 'HOSTNAME',
+            database: 'DB',
+            password: 'PWD',
             port: 5432,
         });
 
